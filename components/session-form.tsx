@@ -53,6 +53,20 @@ export function SessionForm({
   const [venue, setVenue] = useState<Venue>(initial.venue ?? "casino");
   const [small, setSmall] = useState(centsToInput(initial.stakesSmall ?? 100));
   const [big, setBig] = useState(centsToInput(initial.stakesBig ?? 200));
+
+  // Switching venue swaps in that venue's typical stakes — but only when the
+  // current values are still a preset, so hand-typed stakes survive.
+  function pickVenue(next: Venue) {
+    const untouched = STAKES_PRESETS[venue].some(
+      (p) => small === centsToInput(p.small) && big === centsToInput(p.big),
+    );
+    if (untouched && next !== venue) {
+      const first = STAKES_PRESETS[next][0];
+      setSmall(centsToInput(first.small));
+      setBig(centsToInput(first.big));
+    }
+    setVenue(next);
+  }
   const [startedAt, setStartedAt] = useState("");
   const [tzOffset, setTzOffset] = useState("0");
 
@@ -87,7 +101,7 @@ export function SessionForm({
           <button
             key={v.value}
             type="button"
-            onClick={() => setVenue(v.value)}
+            onClick={() => pickVenue(v.value)}
             className={cn(
               "flex flex-col items-center gap-1.5 rounded-xl border p-3 text-sm transition-colors",
               venue === v.value
@@ -116,8 +130,8 @@ export function SessionForm({
 
       <div className="flex flex-col gap-2">
         <Label>Stakes</Label>
-        <div className="flex gap-2">
-          {STAKES_PRESETS.map((p) => {
+        <div className="flex flex-wrap gap-2">
+          {STAKES_PRESETS[venue].map((p) => {
             const selected =
               small === centsToInput(p.small) && big === centsToInput(p.big);
             return (

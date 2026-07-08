@@ -31,19 +31,14 @@ export function SessionCard({ session }: { session: SessionWithRebuys }) {
           {formatHours(hours)}
         </p>
       </div>
-      <div className="text-right">
-        <p
-          className={cn(
-            "font-semibold tabular-nums",
-            profit >= 0 ? "text-profit" : "text-loss",
-          )}
-        >
-          {formatCentsSigned(profit)}
-        </p>
-        <p className="text-xs text-muted-foreground tabular-nums">
-          {hours > 0 ? `${formatCentsSigned(Math.round(profit / hours))}/hr` : ""}
-        </p>
-      </div>
+      <span
+        className={cn(
+          "font-semibold tabular-nums",
+          profit >= 0 ? "text-profit" : "text-loss",
+        )}
+      >
+        {formatCentsSigned(profit)}
+      </span>
     </Link>
   );
 }

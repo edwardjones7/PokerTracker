@@ -59,22 +59,36 @@ export function aggregateStats(sessions: SessionWithRebuys[]): AggregateStats {
   };
 }
 
-/** Points for the cumulative profit chart, ordered by session end time. */
+/**
+ * Points for the cumulative profit chart, ordered by session end time.
+ * Anchored with a $0 point at index 0 so the first session reads as a
+ * rise/fall from break-even instead of the line starting mid-air.
+ */
 export function cumulativeProfitSeries(sessions: SessionWithRebuys[]) {
   const completed = sessions
     .filter((s) => s.status === "completed" && s.endedAt)
     .sort((a, b) => a.endedAt!.getTime() - b.endedAt!.getTime());
+  if (completed.length === 0) return [];
   let running = 0;
-  return completed.map((s, i) => {
-    running += sessionProfit(s);
-    return {
-      index: i + 1,
-      date: s.endedAt!.toISOString(),
-      profit: running,
-      sessionProfit: sessionProfit(s),
-      venue: s.venue,
-    };
-  });
+  return [
+    {
+      index: 0,
+      date: completed[0].startedAt.toISOString(),
+      profit: 0,
+      sessionProfit: 0,
+      venue: completed[0].venue,
+    },
+    ...completed.map((s, i) => {
+      running += sessionProfit(s);
+      return {
+        index: i + 1,
+        date: s.endedAt!.toISOString(),
+        profit: running,
+        sessionProfit: sessionProfit(s),
+        venue: s.venue,
+      };
+    }),
+  ];
 }
 
 export function formatHours(hours: number): string {

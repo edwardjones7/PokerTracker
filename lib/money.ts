@@ -33,6 +33,11 @@ export function parseDollarsToCents(value: string): number | null {
   return Math.round(num * 100);
 }
 
+/** A single blind: sub-$1 amounts read as cents ("5¢"), the rest as dollars. */
+function formatBlind(cents: number): string {
+  return cents < 100 ? `${cents}¢` : formatCentsCompact(cents);
+}
+
 export function formatStakes(smallCents: number, bigCents: number): string {
-  return `${formatCentsCompact(smallCents)}/${formatCentsCompact(bigCents)}`;
+  return `${formatBlind(smallCents)}/${formatBlind(bigCents)}`;
 }

@@ -38,21 +38,23 @@ function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null;
   const p = payload[0].payload;
+  const dateLabel = new Date(p.date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
   return (
     <div className="rounded-lg border bg-popover px-3 py-2 text-xs shadow-md">
       <p className="text-muted-foreground">
-        Session {p.index} ·{" "}
-        {new Date(p.date).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        })}
+        {p.index === 0 ? "Start" : `Session ${p.index}`} · {dateLabel}
       </p>
       <p className="mt-0.5 font-medium">
         Total {formatCentsSigned(p.profit)}
-        <span className={p.sessionProfit >= 0 ? "text-profit" : "text-loss"}>
-          {" "}
-          ({formatCentsSigned(p.sessionProfit)})
-        </span>
+        {p.index > 0 && (
+          <span className={p.sessionProfit >= 0 ? "text-profit" : "text-loss"}>
+            {" "}
+            ({formatCentsSigned(p.sessionProfit)})
+          </span>
+        )}
       </p>
     </div>
   );
@@ -77,6 +79,9 @@ export function ProfitChart({ data }: { data: ProfitPoint[] }) {
           allowDecimals={false}
         />
         <YAxis
+          // Default domain pins the min at 0, clipping downswings; the series
+          // always contains a 0 anchor, so auto still includes break-even.
+          domain={["auto", "auto"]}
           tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
           tickLine={false}
           axisLine={false}

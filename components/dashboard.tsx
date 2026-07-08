@@ -204,18 +204,16 @@ export function Dashboard({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-3 gap-2">
             <StatTile
-              label="$/hr"
+              label="Avg / session"
               value={
-                stats.hourlyRate !== null
-                  ? formatCentsSigned(Math.round(stats.hourlyRate))
+                stats.sessionCount > 0
+                  ? formatCentsSigned(
+                      Math.round(stats.totalProfit / stats.sessionCount),
+                    )
                   : "—"
               }
-            />
-            <StatTile
-              label="bb/hr"
-              value={stats.bbPerHour !== null ? stats.bbPerHour.toFixed(1) : "—"}
             />
             <StatTile label="Hours" value={formatHours(stats.totalHours)} />
             <StatTile label="Sessions" value={String(stats.sessionCount)} />
