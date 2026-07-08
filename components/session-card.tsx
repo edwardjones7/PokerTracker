@@ -1,0 +1,42 @@
+import Link from "next/link";
+import { formatCentsSigned, formatStakes } from "@/lib/money";
+import {
+  sessionProfit,
+  sessionHours,
+  formatHours,
+  type SessionWithRebuys,
+} from "@/lib/stats";
+import { venueLabel } from "@/lib/venues";
+import { LocalTime } from "@/components/local-time";
+import { cn } from "@/lib/utils";
+
+export function SessionCard({ session }: { session: SessionWithRebuys }) {
+  const meta = venueLabel(session.venue);
+  const profit = sessionProfit(session);
+  return (
+    <Link
+      href={`/sessions/${session.id}`}
+      className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent"
+    >
+      <span className="text-2xl">{meta.emoji}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">
+          {session.location || meta.label}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          <LocalTime date={session.startedAt} format="date" /> ·{" "}
+          {formatStakes(session.stakesSmall, session.stakesBig)} ·{" "}
+          {formatHours(sessionHours(session))}
+        </p>
+      </div>
+      <span
+        className={cn(
+          "font-semibold tabular-nums",
+          profit >= 0 ? "text-emerald-500" : "text-red-500",
+        )}
+      >
+        {formatCentsSigned(profit)}
+      </span>
+    </Link>
+  );
+}
