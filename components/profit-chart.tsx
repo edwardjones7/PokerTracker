@@ -29,6 +29,21 @@ function dollars(cents: number): string {
   return `${sign}$${Math.round(Math.abs(cents) / 100)}`;
 }
 
+// Ticks on $100 boundaries, widening to a larger multiple of $100 only when
+// the range would otherwise cram in more than ~8 gridlines.
+const HUNDRED = 10_000; // cents
+function hundredTicks(data: ProfitPoint[]): number[] {
+  const profits = data.map((d) => d.profit);
+  const min = Math.min(0, ...profits);
+  const max = Math.max(0, ...profits);
+  const step = Math.max(HUNDRED, Math.ceil((max - min) / 8 / HUNDRED) * HUNDRED);
+  const ticks = [];
+  for (let t = Math.floor(min / step) * step; t <= Math.ceil(max / step) * step; t += step) {
+    ticks.push(t);
+  }
+  return ticks;
+}
+
 function ChartTooltip({
   active,
   payload,
@@ -61,6 +76,7 @@ function ChartTooltip({
 }
 
 export function ProfitChart({ data }: { data: ProfitPoint[] }) {
+  const ticks = hundredTicks(data);
   return (
     <ResponsiveContainer width="100%" height={240}>
       <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
