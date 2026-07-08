@@ -95,9 +95,8 @@ export function ProfitChart({ data }: { data: ProfitPoint[] }) {
           allowDecimals={false}
         />
         <YAxis
-          // Default domain pins the min at 0, clipping downswings; the series
-          // always contains a 0 anchor, so auto still includes break-even.
-          domain={["auto", "auto"]}
+          domain={[ticks[0], ticks[ticks.length - 1]]}
+          ticks={ticks}
           tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
           tickLine={false}
           axisLine={false}
