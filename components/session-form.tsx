@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { VenueIcon } from "@/components/venue-icon";
 import { VENUE_OPTIONS, STAKES_PRESETS } from "@/lib/venues";
 import type { Venue } from "@/db/schema";
 import type { ActionState } from "@/app/actions/sessions";
@@ -88,13 +89,16 @@ export function SessionForm({
             type="button"
             onClick={() => setVenue(v.value)}
             className={cn(
-              "flex flex-col items-center gap-1 rounded-lg border p-3 text-sm transition-colors",
+              "flex flex-col items-center gap-1.5 rounded-xl border p-3 text-sm transition-colors",
               venue === v.value
-                ? "border-primary bg-primary/10 font-medium"
+                ? "border-primary/50 bg-primary/10 font-medium"
                 : "text-muted-foreground hover:bg-accent",
             )}
           >
-            <span className="text-lg leading-none">{v.emoji}</span>
+            <VenueIcon
+              venue={v.value}
+              className={cn("size-5", venue === v.value && "text-primary")}
+            />
             {v.label}
           </button>
         ))}
@@ -127,7 +131,7 @@ export function SessionForm({
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-sm transition-colors",
                   selected
-                    ? "border-primary bg-primary/10 font-medium"
+                    ? "border-primary/50 bg-primary/10 font-medium"
                     : "text-muted-foreground hover:bg-accent",
                 )}
               >

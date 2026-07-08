@@ -190,7 +190,8 @@ export async function undoRebuy(id: number): Promise<void> {
   refreshAll();
 }
 
-/** Live mode: finish the running session. */
+/** Live mode: finish the running session. Notes are added afterwards on the
+ * recap page, so leaving the table is just "type the number, done". */
 export async function cashOutSession(
   _prev: ActionState,
   formData: FormData,
@@ -200,14 +201,32 @@ export async function cashOutSession(
   const cashOut = parseMoney(formData, "cashOut");
   if (cashOut === null)
     return { error: "Enter what you cashed out (0 if you lost it all)." };
+
+  const db = await getDb();
+  await db
+    .update(sessions)
+    .set({ cashOut, endedAt: new Date(), status: "completed" })
+    .where(eq(sessions.id, sessionId));
+
+  refreshAll();
+  redirect(`/sessions/${sessionId}?finished=1`);
+}
+
+/** Add or edit notes on a session after the fact. */
+export async function updateSessionNotes(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const sessionId = Number(formData.get("sessionId"));
+  if (!Number.isInteger(sessionId)) return { error: "Missing session id." };
   const notes = String(formData.get("notes") ?? "").trim();
 
   const db = await getDb();
   await db
     .update(sessions)
-    .set({ cashOut, notes, endedAt: new Date(), status: "completed" })
+    .set({ notes })
     .where(eq(sessions.id, sessionId));
 
   refreshAll();
-  redirect(`/sessions/${sessionId}`);
+  return { error: null };
 }

@@ -37,22 +37,23 @@ export function BankrollForm() {
       ref={formRef}
       action={formAction}
       onSubmit={() => (submitted.current = true)}
-      className="flex flex-col gap-4 rounded-xl border bg-card p-4"
+      className="flex flex-col gap-4 rounded-2xl border bg-card p-4 sm:p-5"
     >
+      <p className="text-sm font-medium">Move money</p>
       <input type="hidden" name="type" value={type} />
       <input type="hidden" name="bankroll" value={bankroll} />
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
         {(["deposit", "withdrawal"] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setType(t)}
             className={cn(
-              "rounded-lg border py-2 text-sm capitalize transition-colors",
+              "rounded-md py-1.5 text-sm capitalize transition-colors",
               type === t
-                ? "border-primary bg-primary/10 font-medium"
-                : "text-muted-foreground hover:bg-accent",
+                ? "bg-card font-medium shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t}
@@ -60,11 +61,11 @@ export function BankrollForm() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
         {(
           [
-            ["live", "💵 Live (cash)"],
-            ["online", "💻 Online"],
+            ["live", "Live (cash)"],
+            ["online", "Online"],
           ] as const
         ).map(([b, label]) => (
           <button
@@ -72,10 +73,10 @@ export function BankrollForm() {
             type="button"
             onClick={() => setBankroll(b)}
             className={cn(
-              "rounded-lg border py-2 text-sm transition-colors",
+              "rounded-md py-1.5 text-sm transition-colors",
               bankroll === b
-                ? "border-primary bg-primary/10 font-medium"
-                : "text-muted-foreground hover:bg-accent",
+                ? "bg-card font-medium shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {label}

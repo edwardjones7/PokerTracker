@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { ArrowUpRight, Spade } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   aggregateStats,
@@ -9,19 +10,22 @@ import {
   formatHours,
   type SessionWithRebuys,
 } from "@/lib/stats";
-import { formatCentsSigned } from "@/lib/money";
+import { formatCents, formatCentsSigned } from "@/lib/money";
 import { ProfitChart } from "@/components/profit-chart";
 import { SessionCard } from "@/components/session-card";
+import { VenueIcon } from "@/components/venue-icon";
 import type { Venue } from "@/db/schema";
 
 type VenueFilter = "all" | Venue;
 type RangeFilter = "all" | "30d" | "90d" | "1y";
 
+type Balances = { live: number; online: number; total: number };
+
 const VENUE_FILTERS: { value: VenueFilter; label: string }[] = [
   { value: "all", label: "All" },
-  { value: "casino", label: "🎰 Casino" },
-  { value: "home", label: "🏠 Home" },
-  { value: "online", label: "💻 Online" },
+  { value: "casino", label: "Casino" },
+  { value: "home", label: "Home" },
+  { value: "online", label: "Online" },
 ];
 
 const RANGE_FILTERS: { value: RangeFilter; label: string; days?: number }[] = [
@@ -45,9 +49,9 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
+        "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors",
         selected
-          ? "border-primary bg-primary/10 font-medium"
+          ? "border-primary/50 bg-primary/10 font-medium text-foreground"
           : "text-muted-foreground hover:bg-accent",
       )}
     >
@@ -56,7 +60,24 @@ function Chip({
   );
 }
 
-export function Dashboard({ sessions }: { sessions: SessionWithRebuys[] }) {
+function StatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border bg-card p-3.5">
+      <p className="text-[11px] tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p className="mt-0.5 text-lg font-semibold tabular-nums">{value}</p>
+    </div>
+  );
+}
+
+export function Dashboard({
+  sessions,
+  balances,
+}: {
+  sessions: SessionWithRebuys[];
+  balances: Balances;
+}) {
   const [venue, setVenue] = useState<VenueFilter>("all");
   const [range, setRange] = useState<RangeFilter>("all");
 
@@ -73,7 +94,7 @@ export function Dashboard({ sessions }: { sessions: SessionWithRebuys[] }) {
 
   const stats = useMemo(() => aggregateStats(filtered), [filtered]);
   const series = useMemo(() => cumulativeProfitSeries(filtered), [filtered]);
-  const recent = filtered.slice(0, 5);
+  const recent = filtered.slice(0, 6);
 
   return (
     <div className="flex flex-col gap-4">
@@ -84,6 +105,9 @@ export function Dashboard({ sessions }: { sessions: SessionWithRebuys[] }) {
             selected={venue === f.value}
             onClick={() => setVenue(f.value)}
           >
+            {f.value !== "all" && (
+              <VenueIcon venue={f.value} className="size-3.5" />
+            )}
             {f.label}
           </Chip>
         ))}
@@ -100,78 +124,113 @@ export function Dashboard({ sessions }: { sessions: SessionWithRebuys[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No completed sessions here yet. Play one and your stats show up.
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed p-12 text-center">
+          <Spade className="size-8 text-muted-foreground/50" />
+          <p className="text-sm text-muted-foreground">
+            No completed sessions here yet. Play one and your stats show up.
+          </p>
         </div>
       ) : (
         <>
-          <div className="rounded-2xl border bg-card p-5">
-            <p className="text-sm text-muted-foreground">Profit</p>
-            <p
-              className={cn(
-                "text-3xl font-bold tabular-nums",
-                stats.totalProfit >= 0 ? "text-emerald-500" : "text-red-500",
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="rounded-2xl border bg-card p-5 lg:col-span-2">
+              <p className="text-[11px] tracking-wide text-muted-foreground uppercase">
+                Profit
+              </p>
+              <p
+                className={cn(
+                  "mt-0.5 text-3xl font-bold tracking-tight tabular-nums lg:text-4xl",
+                  stats.totalProfit >= 0 ? "text-profit" : "text-loss",
+                )}
+              >
+                {formatCentsSigned(stats.totalProfit)}
+              </p>
+              {series.length >= 2 && (
+                <div className="mt-4 -mx-2">
+                  <ProfitChart data={series} />
+                </div>
               )}
-            >
-              {formatCentsSigned(stats.totalProfit)}
-            </p>
-            {series.length >= 2 && (
-              <div className="mt-3 -mx-2">
-                <ProfitChart data={series} />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <Link
+                href="/bankroll"
+                className="group flex flex-1 flex-col rounded-2xl border bg-gradient-to-b from-primary/10 to-card p-5 transition-colors hover:border-primary/30"
+              >
+                <p className="flex items-center justify-between text-[11px] tracking-wide text-muted-foreground uppercase">
+                  Bankroll
+                  <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </p>
+                <p className="mt-0.5 text-3xl font-bold tracking-tight tabular-nums">
+                  {formatCents(balances.total)}
+                </p>
+                <div className="mt-auto flex gap-6 pt-4 text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Live</p>
+                    <p className="font-semibold tabular-nums">
+                      {formatCents(balances.live)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Online</p>
+                    <p className="font-semibold tabular-nums">
+                      {formatCents(balances.online)}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+              <div className="grid grid-cols-2 gap-4">
+                <StatTile
+                  label="Best"
+                  value={
+                    stats.bestSession
+                      ? formatCentsSigned(
+                          (stats.bestSession.cashOut ?? 0) -
+                            stats.bestSession.buyIn -
+                            stats.bestSession.rebuyTotal,
+                        )
+                      : "—"
+                  }
+                />
+                <StatTile
+                  label="Win rate"
+                  value={
+                    stats.winningSessionRate !== null
+                      ? `${Math.round(stats.winningSessionRate * 100)}%`
+                      : "—"
+                  }
+                />
               </div>
-            )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            {(
-              [
-                [
-                  "$/hr",
-                  stats.hourlyRate !== null
-                    ? formatCentsSigned(Math.round(stats.hourlyRate))
-                    : "—",
-                ],
-                [
-                  "bb/hr",
-                  stats.bbPerHour !== null ? stats.bbPerHour.toFixed(1) : "—",
-                ],
-                ["Hours", formatHours(stats.totalHours)],
-                ["Sessions", String(stats.sessionCount)],
-                [
-                  "Win rate",
-                  stats.winningSessionRate !== null
-                    ? `${Math.round(stats.winningSessionRate * 100)}%`
-                    : "—",
-                ],
-                [
-                  "Best",
-                  stats.bestSession
-                    ? formatCentsSigned(
-                        (stats.bestSession.cashOut ?? 0) -
-                          stats.bestSession.buyIn -
-                          stats.bestSession.rebuyTotal,
-                      )
-                    : "—",
-                ],
-              ] as [string, string][]
-            ).map(([label, value]) => (
-              <div key={label} className="rounded-xl border bg-card p-3">
-                <p className="text-xs text-muted-foreground">{label}</p>
-                <p className="font-semibold tabular-nums">{value}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <StatTile
+              label="$/hr"
+              value={
+                stats.hourlyRate !== null
+                  ? formatCentsSigned(Math.round(stats.hourlyRate))
+                  : "—"
+              }
+            />
+            <StatTile
+              label="bb/hr"
+              value={stats.bbPerHour !== null ? stats.bbPerHour.toFixed(1) : "—"}
+            />
+            <StatTile label="Hours" value={formatHours(stats.totalHours)} />
+            <StatTile label="Sessions" value={String(stats.sessionCount)} />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="mt-2 flex items-center justify-between">
             <h2 className="text-sm font-medium">Recent sessions</h2>
             <Link
               href="/sessions"
-              className="text-sm text-muted-foreground hover:text-foreground"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               See all
             </Link>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="grid gap-2 lg:grid-cols-2">
             {recent.map((s) => (
               <SessionCard key={s.id} session={s} />
             ))}

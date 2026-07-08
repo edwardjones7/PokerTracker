@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { login, type LoginState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LogoMark } from "@/components/logo";
 import {
   Card,
   CardContent,
@@ -20,8 +21,11 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-dvh items-center justify-center p-6">
       <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">♠️ PokerTracker</CardTitle>
+        <CardHeader className="items-center text-center">
+          <LogoMark className="mx-auto mb-3 size-12" />
+          <CardTitle className="text-2xl tracking-tight">
+            PokerTracker
+          </CardTitle>
           <CardDescription>Enter your passcode to continue</CardDescription>
         </CardHeader>
         <CardContent>

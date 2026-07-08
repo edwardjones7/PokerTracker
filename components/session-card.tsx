@@ -7,18 +7,20 @@ import {
   type SessionWithRebuys,
 } from "@/lib/stats";
 import { venueLabel } from "@/lib/venues";
+import { VenueBadge } from "@/components/venue-icon";
 import { LocalTime } from "@/components/local-time";
 import { cn } from "@/lib/utils";
 
 export function SessionCard({ session }: { session: SessionWithRebuys }) {
   const meta = venueLabel(session.venue);
   const profit = sessionProfit(session);
+  const hours = sessionHours(session);
   return (
     <Link
       href={`/sessions/${session.id}`}
-      className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent"
+      className="flex items-center gap-3.5 rounded-xl border bg-card p-4 transition-colors hover:border-primary/25 hover:bg-accent/60"
     >
-      <span className="text-2xl">{meta.emoji}</span>
+      <VenueBadge venue={session.venue} />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">
           {session.location || meta.label}
@@ -26,17 +28,22 @@ export function SessionCard({ session }: { session: SessionWithRebuys }) {
         <p className="text-sm text-muted-foreground">
           <LocalTime date={session.startedAt} format="date" /> ·{" "}
           {formatStakes(session.stakesSmall, session.stakesBig)} ·{" "}
-          {formatHours(sessionHours(session))}
+          {formatHours(hours)}
         </p>
       </div>
-      <span
-        className={cn(
-          "font-semibold tabular-nums",
-          profit >= 0 ? "text-emerald-500" : "text-red-500",
-        )}
-      >
-        {formatCentsSigned(profit)}
-      </span>
+      <div className="text-right">
+        <p
+          className={cn(
+            "font-semibold tabular-nums",
+            profit >= 0 ? "text-profit" : "text-loss",
+          )}
+        >
+          {formatCentsSigned(profit)}
+        </p>
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {hours > 0 ? `${formatCentsSigned(Math.round(profit / hours))}/hr` : ""}
+        </p>
+      </div>
     </Link>
   );
 }

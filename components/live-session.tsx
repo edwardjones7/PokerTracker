@@ -5,7 +5,6 @@ import { Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   addRebuy,
   cashOutSession,
@@ -14,6 +13,7 @@ import {
 } from "@/app/actions/sessions";
 import { formatCents, formatStakes } from "@/lib/money";
 import { venueLabel } from "@/lib/venues";
+import { VenueBadge } from "@/components/venue-icon";
 import type { Rebuy, Session } from "@/db/schema";
 
 function useElapsed(since: Date) {
@@ -56,29 +56,47 @@ export function LiveSession({
   const [, startTransition] = useTransition();
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="rounded-2xl border bg-card p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          {meta.emoji} {session.location || meta.label} ·{" "}
-          {formatStakes(session.stakesSmall, session.stakesBig)}
-        </p>
-        <p className="mt-2 font-mono text-5xl font-bold tabular-nums">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-b from-primary/12 via-card to-card p-6 text-center sm:p-10">
+        <div className="mb-5 flex items-center justify-center gap-2">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex size-2 rounded-full bg-primary" />
+          </span>
+          <span className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+            Live
+          </span>
+        </div>
+        <p className="font-mono text-6xl font-bold tracking-tight tabular-nums sm:text-7xl">
           {elapsed}
         </p>
+        <div className="mt-5 flex items-center justify-center gap-3 text-sm text-muted-foreground">
+          <VenueBadge venue={session.venue} className="size-7 rounded-md" />
+          <span className="font-medium text-foreground">
+            {session.location || meta.label}
+          </span>
+          <span>·</span>
+          <span>{formatStakes(session.stakesSmall, session.stakesBig)}</span>
+        </div>
         <p className="mt-2 text-sm text-muted-foreground">
-          In for{" "}
-          <span className="font-semibold text-foreground">
+          On the table{" "}
+          <span className="font-semibold text-foreground tabular-nums">
             {formatCents(invested)}
           </span>
+          {rebuys.length > 0 &&
+            ` — buy-in ${formatCents(session.buyIn)} + ${rebuys.length} rebuy${rebuys.length > 1 ? "s" : ""}`}
         </p>
       </div>
 
-      <div className="rounded-xl border bg-card p-4">
+      <div className="rounded-2xl border bg-card p-4 sm:p-5">
         <p className="mb-3 text-sm font-medium">Rebuys</p>
         {rebuys.length > 0 && (
-          <ul className="mb-3 flex flex-col gap-2">
+          <ul className="mb-3 flex flex-col divide-y divide-border/60">
             {rebuys.map((r) => (
-              <li key={r.id} className="flex items-center justify-between text-sm">
+              <li
+                key={r.id}
+                className="flex items-center justify-between py-1.5 text-sm"
+              >
                 <span className="tabular-nums">{formatCents(r.amount)}</span>
                 <Button
                   variant="ghost"
@@ -110,13 +128,17 @@ export function LiveSession({
       </div>
 
       {!showCashOut ? (
-        <Button size="lg" onClick={() => setShowCashOut(true)}>
+        <Button
+          size="lg"
+          className="h-12 text-base"
+          onClick={() => setShowCashOut(true)}
+        >
           Cash out
         </Button>
       ) : (
         <form
           action={cashOutAction}
-          className="flex flex-col gap-4 rounded-xl border bg-card p-4"
+          className="flex flex-col gap-4 rounded-2xl border bg-card p-4 sm:p-5"
         >
           <input type="hidden" name="sessionId" value={session.id} />
           <div className="flex flex-col gap-2">
@@ -128,16 +150,11 @@ export function LiveSession({
               placeholder="0"
               autoFocus
               required
+              className="h-12 text-lg tabular-nums"
             />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="notes">Session notes</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              placeholder="Table dynamics, big hands, mistakes…"
-              rows={3}
-            />
+            <p className="text-xs text-muted-foreground">
+              Just the number — you can write up the session right after.
+            </p>
           </div>
           {cashOutState.error && (
             <p className="text-sm text-destructive">{cashOutState.error}</p>
@@ -146,12 +163,16 @@ export function LiveSession({
             <Button
               type="button"
               variant="outline"
-              className="flex-1"
+              className="h-11 flex-1"
               onClick={() => setShowCashOut(false)}
             >
               Keep playing
             </Button>
-            <Button type="submit" className="flex-1" disabled={cashOutPending}>
+            <Button
+              type="submit"
+              className="h-11 flex-1"
+              disabled={cashOutPending}
+            >
               {cashOutPending ? "Saving…" : "End session"}
             </Button>
           </div>

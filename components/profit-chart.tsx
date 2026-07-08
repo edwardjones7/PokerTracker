@@ -1,9 +1,9 @@
 "use client";
 
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
-  Line,
-  LineChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -19,13 +19,10 @@ export type ProfitPoint = {
   sessionProfit: number; // cents
 };
 
-const INK = {
-  line: "#3987e5",
-  grid: "#2c2c2a",
-  baseline: "#383835",
-  muted: "#898781",
-  surface: "#171717",
-};
+// Line color validated against the card surface with the dataviz palette
+// checker (lightness band, chroma floor, 3:1 contrast). Grid/axis inks stay
+// recessive via theme tokens.
+const LINE = "var(--chart-1)";
 
 function dollars(cents: number): string {
   const sign = cents < 0 ? "-" : "";
@@ -52,11 +49,7 @@ function ChartTooltip({
       </p>
       <p className="mt-0.5 font-medium">
         Total {formatCentsSigned(p.profit)}
-        <span
-          className={
-            p.sessionProfit >= 0 ? "text-emerald-500" : "text-red-500"
-          }
-        >
+        <span className={p.sessionProfit >= 0 ? "text-profit" : "text-loss"}>
           {" "}
           ({formatCentsSigned(p.sessionProfit)})
         </span>
@@ -67,41 +60,45 @@ function ChartTooltip({
 
 export function ProfitChart({ data }: { data: ProfitPoint[] }) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <LineChart
-        data={data}
-        margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
-      >
-        <CartesianGrid stroke={INK.grid} strokeWidth={1} vertical={false} />
+    <ResponsiveContainer width="100%" height={240}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+        <defs>
+          <linearGradient id="profitFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={LINE} stopOpacity={0.28} />
+            <stop offset="100%" stopColor={LINE} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid stroke="var(--border)" strokeWidth={1} vertical={false} />
         <XAxis
           dataKey="index"
-          tick={{ fill: INK.muted, fontSize: 11 }}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
           tickLine={false}
-          axisLine={{ stroke: INK.baseline }}
+          axisLine={{ stroke: "var(--border)" }}
           allowDecimals={false}
         />
         <YAxis
-          tick={{ fill: INK.muted, fontSize: 11 }}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
           tickLine={false}
           axisLine={false}
           tickFormatter={dollars}
           width={48}
         />
-        <ReferenceLine y={0} stroke={INK.baseline} strokeWidth={1.5} />
+        <ReferenceLine y={0} stroke="var(--muted-foreground)" strokeOpacity={0.4} strokeWidth={1.5} />
         <Tooltip
           content={<ChartTooltip />}
-          cursor={{ stroke: INK.muted, strokeDasharray: "3 3" }}
+          cursor={{ stroke: "var(--muted-foreground)", strokeDasharray: "3 3" }}
         />
-        <Line
+        <Area
           type="monotone"
           dataKey="profit"
-          stroke={INK.line}
+          stroke={LINE}
           strokeWidth={2}
+          fill="url(#profitFill)"
           dot={false}
-          activeDot={{ r: 4, stroke: INK.surface, strokeWidth: 2 }}
+          activeDot={{ r: 4, stroke: "var(--card)", strokeWidth: 2 }}
           isAnimationActive={false}
         />
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 }
