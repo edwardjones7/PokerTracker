@@ -23,12 +23,17 @@ export default function SignupPage() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    const password = String(form.get("password") ?? "");
+    if (password !== String(form.get("confirmPassword") ?? "")) {
+      setError("Passwords don't match.");
+      return;
+    }
     setPending(true);
     setError(null);
     const { error } = await authClient.signUp.email({
       name: String(form.get("name") ?? "").trim(),
       email: String(form.get("email") ?? ""),
-      password: String(form.get("password") ?? ""),
+      password,
     });
     if (error) {
       setError(error.message ?? "Sign-up failed.");
@@ -73,6 +78,14 @@ export default function SignupPage() {
               type="password"
               name="password"
               placeholder="Password (8+ characters)"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+            <Input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm password"
               autoComplete="new-password"
               minLength={8}
               required
