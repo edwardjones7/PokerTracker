@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  computeBalances,
   getActiveSession,
-  getBankrollBalances,
   getSessionsWithRebuys,
+  getTransactions,
 } from "@/lib/data";
 import { Dashboard } from "@/components/dashboard";
 import { PageHeader } from "@/components/page-header";
@@ -12,11 +14,17 @@ import { PageHeader } from "@/components/page-header";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [balances, sessions, active] = await Promise.all([
-    getBankrollBalances(),
+  const [sessions, transactions, active] = await Promise.all([
     getSessionsWithRebuys(),
+    getTransactions(),
     getActiveSession(),
   ]);
+
+  // Brand-new account: capture starting bankrolls first. The onboarding
+  // deposits (even $0 ones) are what makes this stop firing.
+  if (sessions.length === 0 && transactions.length === 0) redirect("/welcome");
+
+  const balances = computeBalances(sessions, transactions);
 
   return (
     <div className="flex flex-col">

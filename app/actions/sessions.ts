@@ -2,11 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { getDb, sessions, rebuys, type NewSession } from "@/db";
 import { parseDollarsToCents } from "@/lib/money";
 import { parseLocalDateTime } from "@/lib/datetime";
 import { getActiveSession } from "@/lib/data";
+import { requireUser } from "@/lib/auth";
 
 export type ActionState = { error: string | null };
 
@@ -86,9 +87,11 @@ export async function createPastSession(
   if (!Number.isFinite(durationMs) || durationMs <= 0)
     return { error: "Enter how long you played." };
 
+  const user = await requireUser();
   const db = await getDb();
   await db.insert(sessions).values({
     ...common,
+    userId: user.id,
     cashOut,
     startedAt,
     endedAt: new Date(startedAt.getTime() + durationMs),
@@ -125,6 +128,7 @@ export async function updateSession(
   if (!Number.isFinite(durationMs) || durationMs <= 0)
     return { error: "Enter how long you played." };
 
+  const user = await requireUser();
   const db = await getDb();
   await db
     .update(sessions)
@@ -134,15 +138,18 @@ export async function updateSession(
       startedAt,
       endedAt: new Date(startedAt.getTime() + durationMs),
     })
-    .where(eq(sessions.id, id));
+    .where(and(eq(sessions.id, id), eq(sessions.userId, user.id)));
 
   refreshAll();
   redirect(`/sessions/${id}`);
 }
 
 export async function deleteSession(id: number): Promise<void> {
+  const user = await requireUser();
   const db = await getDb();
-  await db.delete(sessions).where(eq(sessions.id, id));
+  await db
+    .delete(sessions)
+    .where(and(eq(sessions.id, id), eq(sessions.userId, user.id)));
   refreshAll();
   redirect("/sessions");
 }
@@ -158,9 +165,11 @@ export async function startSession(
   const common = parseCommonFields(formData);
   if (typeof common === "string") return { error: common };
 
+  const user = await requireUser();
   const db = await getDb();
   await db.insert(sessions).values({
     ...common,
+    userId: user.id,
     startedAt: new Date(),
     status: "active",
   } satisfies NewSession);
@@ -178,15 +187,34 @@ export async function addRebuy(
   const amount = parseMoney(formData, "amount", { min: 1 });
   if (!amount) return { error: "Enter a valid rebuy amount." };
 
+  const user = await requireUser();
   const db = await getDb();
+  const [owned] = await db
+    .select({ id: sessions.id })
+    .from(sessions)
+    .where(and(eq(sessions.id, sessionId), eq(sessions.userId, user.id)))
+    .limit(1);
+  if (!owned) return { error: "Session not found." };
   await db.insert(rebuys).values({ sessionId, amount });
   refreshAll();
   return { error: null };
 }
 
 export async function undoRebuy(id: number): Promise<void> {
+  const user = await requireUser();
   const db = await getDb();
-  await db.delete(rebuys).where(eq(rebuys.id, id));
+  await db.delete(rebuys).where(
+    and(
+      eq(rebuys.id, id),
+      inArray(
+        rebuys.sessionId,
+        db
+          .select({ id: sessions.id })
+          .from(sessions)
+          .where(eq(sessions.userId, user.id)),
+      ),
+    ),
+  );
   refreshAll();
 }
 
@@ -202,11 +230,12 @@ export async function cashOutSession(
   if (cashOut === null)
     return { error: "Enter what you cashed out (0 if you lost it all)." };
 
+  const user = await requireUser();
   const db = await getDb();
   await db
     .update(sessions)
     .set({ cashOut, endedAt: new Date(), status: "completed" })
-    .where(eq(sessions.id, sessionId));
+    .where(and(eq(sessions.id, sessionId), eq(sessions.userId, user.id)));
 
   refreshAll();
   redirect(`/sessions/${sessionId}?finished=1`);
@@ -221,11 +250,12 @@ export async function updateSessionNotes(
   if (!Number.isInteger(sessionId)) return { error: "Missing session id." };
   const notes = String(formData.get("notes") ?? "").trim();
 
+  const user = await requireUser();
   const db = await getDb();
   await db
     .update(sessions)
     .set({ notes })
-    .where(eq(sessions.id, sessionId));
+    .where(and(eq(sessions.id, sessionId), eq(sessions.userId, user.id)));
 
   refreshAll();
   return { error: null };

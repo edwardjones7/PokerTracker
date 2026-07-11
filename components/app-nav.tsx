@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, List, Spade, Wallet } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { SignOutButton } from "@/components/sign-out-button";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -52,9 +53,12 @@ export function SideNav() {
           );
         })}
       </div>
-      <p className="mt-auto px-5 pb-5 text-xs text-muted-foreground/60">
-        Track it or it didn&apos;t happen.
-      </p>
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-5">
+        <SignOutButton className="px-3 py-2 hover:bg-sidebar-accent/60" />
+        <p className="px-2 text-xs text-muted-foreground/60">
+          Track it or it didn&apos;t happen.
+        </p>
+      </div>
     </nav>
   );
 }

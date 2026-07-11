@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getDb, bankrollTransactions } from "@/db";
 import { parseDollarsToCents } from "@/lib/money";
+import { requireUser } from "@/lib/auth";
 import type { ActionState } from "./sessions";
 
 export async function addBankrollTransaction(
@@ -21,8 +22,10 @@ export async function addBankrollTransaction(
   const cents = typeof raw === "string" ? parseDollarsToCents(raw) : null;
   if (!cents || cents <= 0) return { error: "Enter a valid amount." };
 
+  const user = await requireUser();
   const db = await getDb();
   await db.insert(bankrollTransactions).values({
+    userId: user.id,
     bankroll,
     type,
     // Signed storage: withdrawals are negative.

@@ -15,6 +15,13 @@
       "when": 1783483714986,
       "tag": "0001_seed-bankrolls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783807058917,
+      "tag": "0002_multi-user",
+      "breakpoints": true
     }
   ]
 }

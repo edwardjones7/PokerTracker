@@ -6,6 +6,7 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { user } from "./auth-schema";
 
 export const venueEnum = pgEnum("venue", ["casino", "home", "online"]);
 export const sessionStatusEnum = pgEnum("session_status", [
@@ -22,6 +23,10 @@ export const transactionTypeEnum = pgEnum("transaction_type", [
 // All money columns are integer cents.
 export const sessions = pgTable("sessions", {
   id: serial("id").primaryKey(),
+  // Nullable: pre-multi-user rows stay NULL until claimed by OWNER_EMAIL's
+  // signup (see lib/auth.ts). Every query filters by userId, so unclaimed
+  // rows are invisible.
+  userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
   venue: venueEnum("venue").notNull(),
   location: text("location").notNull().default(""),
   stakesSmall: integer("stakes_small").notNull(),
@@ -55,6 +60,7 @@ export const rebuys = pgTable("rebuys", {
 // (live <- casino + home sessions, online <- online sessions).
 export const bankrollTransactions = pgTable("bankroll_transactions", {
   id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
   bankroll: bankrollEnum("bankroll").notNull(),
   type: transactionTypeEnum("type").notNull(),
   amount: integer("amount").notNull(),

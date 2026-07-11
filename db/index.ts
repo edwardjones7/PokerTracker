@@ -1,4 +1,7 @@
-import * as schema from "./schema";
+import * as appSchema from "./schema";
+import * as authSchema from "./auth-schema";
+
+const schema = { ...appSchema, ...authSchema };
 
 type Db = ReturnType<typeof import("drizzle-orm/neon-http").drizzle<typeof schema>>;
 
@@ -32,3 +35,4 @@ export async function getDb(): Promise<Db> {
 }
 
 export * from "./schema";
+export * from "./auth-schema";

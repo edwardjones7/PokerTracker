@@ -50,46 +50,47 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* The app is dark-only (html always carries .dark): a felt-green take on the
-   shadcn dark theme. :root mirrors .dark so nothing depends on the class. */
+/* The app is dark-only (html always carries .dark): casino noir — warm
+   near-black surfaces with a gold primary. :root mirrors .dark so nothing
+   depends on the class. */
 :root,
 .dark {
-  --background: oklch(0.165 0.01 165);
-  --foreground: oklch(0.96 0.007 150);
-  --card: oklch(0.205 0.012 165);
-  --card-foreground: oklch(0.96 0.007 150);
-  --popover: oklch(0.225 0.012 165);
-  --popover-foreground: oklch(0.96 0.007 150);
-  --primary: oklch(0.78 0.15 162);
-  --primary-foreground: oklch(0.2 0.05 162);
-  --secondary: oklch(0.26 0.014 165);
-  --secondary-foreground: oklch(0.96 0.007 150);
-  --muted: oklch(0.25 0.012 165);
-  --muted-foreground: oklch(0.69 0.02 160);
-  --accent: oklch(0.27 0.018 162);
-  --accent-foreground: oklch(0.96 0.007 150);
+  --background: oklch(0.165 0.008 75);
+  --foreground: oklch(0.955 0.005 90);
+  --card: oklch(0.205 0.01 80);
+  --card-foreground: oklch(0.955 0.005 90);
+  --popover: oklch(0.225 0.01 80);
+  --popover-foreground: oklch(0.955 0.005 90);
+  --primary: oklch(0.8 0.13 85);
+  --primary-foreground: oklch(0.24 0.05 85);
+  --secondary: oklch(0.26 0.012 80);
+  --secondary-foreground: oklch(0.955 0.005 90);
+  --muted: oklch(0.25 0.01 80);
+  --muted-foreground: oklch(0.69 0.015 85);
+  --accent: oklch(0.27 0.018 85);
+  --accent-foreground: oklch(0.955 0.005 90);
   --destructive: oklch(0.68 0.19 25);
-  --border: oklch(0.96 0.02 160 / 11%);
-  --input: oklch(0.96 0.02 160 / 15%);
-  --ring: oklch(0.65 0.1 162);
-  /* Chart line #0ca678 — validated against the card surface (L band, chroma,
+  --border: oklch(0.95 0.025 85 / 11%);
+  --input: oklch(0.95 0.025 85 / 15%);
+  --ring: oklch(0.7 0.09 85);
+  /* Chart line #bd8b2e — validated against the card surface (L band, chroma,
      3:1 contrast) with the dataviz palette checker. */
-  --chart-1: #0ca678;
-  --chart-2: oklch(0.62 0.11 85);
-  --chart-3: oklch(0.6 0.1 250);
-  --chart-4: oklch(0.65 0.1 310);
-  --chart-5: oklch(0.55 0.02 165);
-  --profit: oklch(0.79 0.14 162);
+  --chart-1: #bd8b2e;
+  --chart-2: #5b8fe6;
+  --chart-3: #33a06f;
+  --chart-4: #c25a83;
+  --chart-5: #8a7fe0;
+  --profit: oklch(0.78 0.14 155);
   --loss: oklch(0.72 0.16 22);
   --radius: 0.75rem;
-  --sidebar: oklch(0.185 0.011 165);
-  --sidebar-foreground: oklch(0.96 0.007 150);
-  --sidebar-primary: oklch(0.78 0.15 162);
-  --sidebar-primary-foreground: oklch(0.2 0.05 162);
-  --sidebar-accent: oklch(0.26 0.016 162);
-  --sidebar-accent-foreground: oklch(0.96 0.007 150);
-  --sidebar-border: oklch(0.96 0.02 160 / 9%);
-  --sidebar-ring: oklch(0.65 0.1 162);
+  --sidebar: oklch(0.185 0.009 78);
+  --sidebar-foreground: oklch(0.955 0.005 90);
+  --sidebar-primary: oklch(0.8 0.13 85);
+  --sidebar-primary-foreground: oklch(0.24 0.05 85);
+  --sidebar-accent: oklch(0.26 0.014 85);
+  --sidebar-accent-foreground: oklch(0.955 0.005 90);
+  --sidebar-border: oklch(0.95 0.025 85 / 9%);
+  --sidebar-ring: oklch(0.7 0.09 85);
 }
 
 @layer base {
@@ -100,7 +101,7 @@
     @apply bg-background text-foreground;
     background-image: radial-gradient(
       900px 480px at 50% -120px,
-      oklch(0.28 0.045 162 / 0.35),
+      oklch(0.32 0.05 85 / 0.32),
       transparent 70%
     );
     background-repeat: no-repeat;
@@ -109,6 +110,6 @@
     @apply font-sans;
   }
   ::selection {
-    background: oklch(0.78 0.15 162 / 0.3);
+    background: oklch(0.8 0.13 85 / 0.3);
   }
 }

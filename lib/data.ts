@@ -1,5 +1,5 @@
 import "server-only";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import {
   getDb,
   sessions,
@@ -11,8 +11,13 @@ import {
   type BankrollTransaction,
 } from "@/db";
 import { sessionProfit, type SessionWithRebuys } from "@/lib/stats";
+import { requireUser } from "@/lib/auth";
+
+// Every read is scoped to the signed-in user; requireUser() is cached per
+// request, so repeated calls cost one session lookup.
 
 export async function getSessionsWithRebuys(): Promise<SessionWithRebuys[]> {
+  const user = await requireUser();
   const db = await getDb();
   const rows = await db
     .select({
@@ -21,6 +26,7 @@ export async function getSessionsWithRebuys(): Promise<SessionWithRebuys[]> {
     })
     .from(sessions)
     .leftJoin(rebuys, eq(rebuys.sessionId, sessions.id))
+    .where(eq(sessions.userId, user.id))
     .groupBy(sessions.id)
     .orderBy(desc(sessions.startedAt));
   return rows.map((r) => ({ ...r.session, rebuyTotal: r.rebuyTotal }));
@@ -29,11 +35,12 @@ export async function getSessionsWithRebuys(): Promise<SessionWithRebuys[]> {
 export async function getSessionWithRebuys(
   id: number,
 ): Promise<(SessionWithRebuys & { rebuys: Rebuy[] }) | null> {
+  const user = await requireUser();
   const db = await getDb();
   const [session] = await db
     .select()
     .from(sessions)
-    .where(eq(sessions.id, id))
+    .where(and(eq(sessions.id, id), eq(sessions.userId, user.id)))
     .limit(1);
   if (!session) return null;
   const rebuyRows = await db
@@ -51,11 +58,12 @@ export async function getSessionWithRebuys(
 export async function getActiveSession(): Promise<
   (SessionWithRebuys & { rebuys: Rebuy[] }) | null
 > {
+  const user = await requireUser();
   const db = await getDb();
   const [active] = await db
     .select()
     .from(sessions)
-    .where(eq(sessions.status, "active"))
+    .where(and(eq(sessions.status, "active"), eq(sessions.userId, user.id)))
     .orderBy(desc(sessions.startedAt))
     .limit(1);
   if (!active) return null;
@@ -63,10 +71,12 @@ export async function getActiveSession(): Promise<
 }
 
 export async function getTransactions(): Promise<BankrollTransaction[]> {
+  const user = await requireUser();
   const db = await getDb();
   return db
     .select()
     .from(bankrollTransactions)
+    .where(eq(bankrollTransactions.userId, user.id))
     .orderBy(desc(bankrollTransactions.createdAt), desc(bankrollTransactions.id));
 }
 
