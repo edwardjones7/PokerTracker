@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, List, Spade, Wallet } from "lucide-react";
+import { LayoutDashboard, List, Spade, UsersRound, Wallet } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { SignOutButton } from "@/components/sign-out-button";
 import { cn } from "@/lib/utils";
@@ -14,12 +14,19 @@ const items = [
   { href: "/bankroll", label: "Bankroll", icon: Wallet },
 ];
 
+// Owner-only entry, appended when the layout says the viewer is the owner.
+const usersItem = { href: "/users", label: "Users", icon: UsersRound };
+
+function navItems(showUsers: boolean) {
+  return showUsers ? [...items, usersItem] : items;
+}
+
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
 /** Desktop navigation — fixed left rail, hidden below lg. */
-export function SideNav() {
+export function SideNav({ showUsers = false }: { showUsers?: boolean }) {
   const pathname = usePathname();
   return (
     <nav className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
@@ -29,7 +36,7 @@ export function SideNav() {
         </Link>
       </div>
       <div className="flex flex-col gap-1 px-3">
-        {items.map(({ href, label, icon: Icon }) => {
+        {navItems(showUsers).map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link
@@ -64,12 +71,17 @@ export function SideNav() {
 }
 
 /** Mobile navigation — bottom tab bar, hidden at lg and up. */
-export function BottomNav() {
+export function BottomNav({ showUsers = false }: { showUsers?: boolean }) {
   const pathname = usePathname();
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 lg:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-4 pb-[env(safe-area-inset-bottom)]">
-        {items.map(({ href, label, icon: Icon }) => {
+      <div
+        className={cn(
+          "mx-auto grid max-w-md pb-[env(safe-area-inset-bottom)]",
+          showUsers ? "grid-cols-5" : "grid-cols-4",
+        )}
+      >
+        {navItems(showUsers).map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link

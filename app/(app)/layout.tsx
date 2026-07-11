@@ -1,12 +1,16 @@
 import { SideNav, BottomNav } from "@/components/app-nav";
 import { SignOutButton } from "@/components/sign-out-button";
+import { requireUser, isOwner } from "@/lib/auth";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // requireUser() is cache()d, so pages re-checking auth costs nothing extra.
+  const user = await requireUser();
+  const owner = isOwner(user.email);
   return (
     <>
-      <SideNav />
+      <SideNav showUsers={owner} />
       <div className="flex flex-1 flex-col lg:pl-60">
         {/* Mobile-only sign out; desktop has it in the side rail. */}
         <div className="flex justify-end px-4 pt-3 lg:hidden">
@@ -16,7 +20,7 @@ export default function AppLayout({
           {children}
         </main>
       </div>
-      <BottomNav />
+      <BottomNav showUsers={owner} />
     </>
   );
 }

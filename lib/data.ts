@@ -6,12 +6,13 @@ import {
   rebuys,
   bankrollTransactions,
   bankrollForVenue,
+  user,
   type Session,
   type Rebuy,
   type BankrollTransaction,
 } from "@/db";
 import { sessionProfit, type SessionWithRebuys } from "@/lib/stats";
-import { requireUser } from "@/lib/auth";
+import { requireOwner, requireUser } from "@/lib/auth";
 
 // Every read is scoped to the signed-in user; requireUser() is cached per
 // request, so repeated calls cost one session lookup.
@@ -107,6 +108,34 @@ export async function getBankrollBalances(): Promise<BankrollBalances> {
     getTransactions(),
   ]);
   return computeBalances(allSessions, transactions);
+}
+
+export type UserOverview = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  sessionCount: number;
+  lastPlayed: Date | null;
+};
+
+/** Owner-only: every account with a summary of its activity. */
+export async function getAllUsers(): Promise<UserOverview[]> {
+  await requireOwner();
+  const db = await getDb();
+  return db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      sessionCount: sql<number>`count(${sessions.id})::int`,
+      lastPlayed: sql<Date | null>`max(${sessions.startedAt})`,
+    })
+    .from(user)
+    .leftJoin(sessions, eq(sessions.userId, user.id))
+    .groupBy(user.id)
+    .orderBy(user.createdAt);
 }
 
 export type { Session, SessionWithRebuys };

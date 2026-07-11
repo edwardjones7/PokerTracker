@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -76,4 +76,16 @@ export const requireUser = cache(async () => {
   const result = await auth.api.getSession({ headers: await headers() });
   if (!result) redirect("/login");
   return result.user;
+});
+
+export function isOwner(email: string): boolean {
+  const owner = (process.env.OWNER_EMAIL ?? "").toLowerCase();
+  return owner !== "" && email.toLowerCase() === owner;
+}
+
+/** Owner-only boundary: 404s for everyone else so the page stays invisible. */
+export const requireOwner = cache(async () => {
+  const user = await requireUser();
+  if (!isOwner(user.email)) notFound();
+  return user;
 });
