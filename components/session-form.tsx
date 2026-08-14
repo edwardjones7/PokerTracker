@@ -209,7 +209,8 @@ export function SessionForm({
                 type="number"
                 min={0}
                 max={59}
-                step={5}
+                step={1}
+                inputMode="numeric"
                 defaultValue={
                   initialDurationMin != null ? initialDurationMin % 60 : 0
                 }
