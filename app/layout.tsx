@@ -32,6 +32,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Without this, every env(safe-area-inset-*) in the app resolves to 0.
+  viewportFit: "cover",
   themeColor: "#0b100d",
 };
 
@@ -45,9 +47,18 @@ export default function RootLayout({
       lang="en"
       className={`dark ${geistSans.variable} ${geistMono.variable} ${bodoni.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)]">
+        {/* The installed app's status bar is transparent: this keeps scrolled
+            content from running under the clock. */}
+        <div
+          aria-hidden="true"
+          className="fixed inset-x-0 top-0 z-50 h-[env(safe-area-inset-top)] bg-background/70 backdrop-blur-md"
+        />
         {children}
-        <Toaster position="top-center" />
+        <Toaster
+          position="top-center"
+          mobileOffset={{ top: "calc(env(safe-area-inset-top) + 0.75rem)" }}
+        />
       </body>
     </html>
   );

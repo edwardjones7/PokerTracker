@@ -40,7 +40,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
           <LogoMark detailed className="mx-auto mb-3 size-16" />

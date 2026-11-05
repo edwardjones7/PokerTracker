@@ -49,6 +49,11 @@ App Router + TypeScript + Tailwind v4 + shadcn/ui (Base UI primitives — use
   (parsed by `lib/datetime.ts`); timestamps render via `<LocalTime>`
   (client-only) — never format dates during SSR.
 
+- **Installed app**: people run this from the home screen, edge to edge
+  (`viewportFit: "cover"`, translucent status bar). Anything pinned to the top
+  or bottom of the screen must add `env(safe-area-inset-*)`. Manifest in
+  `app/manifest.ts`; `proxy.ts` must keep `.webmanifest` public.
+
 ## Verification
 
 `npm run build && npm start -- --port 3100`, then drive with Playwright

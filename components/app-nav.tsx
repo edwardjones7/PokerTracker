@@ -88,7 +88,7 @@ export function BottomNav({
 }) {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-sidebar-border bg-sidebar/95 backdrop-blur lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-sidebar-border bg-sidebar/95 backdrop-blur select-none [-webkit-touch-callout:none] lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-5 pb-[env(safe-area-inset-bottom)]">
         {items.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);

@@ -159,6 +159,15 @@
   }
   html {
     @apply font-sans;
+    /* Taps act immediately, with no grey flash or double-tap zoom. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Installed app only: the browser keeps its pull-to-refresh. */
+  @media (display-mode: standalone) {
+    html {
+      overscroll-behavior-y: none;
+    }
   }
   ::selection {
     background: rgb(212 174 90 / 0.3);
