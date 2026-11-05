@@ -1,11 +1,17 @@
-/** Tiny attribution tag pinned to the top-right corner of every page. */
-export function PoweredBy() {
+import { cn } from "@/lib/utils";
+
+/** Small attribution link. Rendered in normal page flow (side rail, page
+    footer, under the auth cards) so it never floats over content. */
+export function PoweredBy({ className }: { className?: string }) {
   return (
     <a
       href="https://www.elenos.ai"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed top-2 right-3 z-50 text-[10px] tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground"
+      className={cn(
+        "text-[11px] tracking-wide text-muted-foreground/70 transition-colors hover:text-foreground",
+        className,
+      )}
     >
       Powered by <span className="font-semibold">Elenos</span>
     </a>

@@ -23,7 +23,7 @@ export default async function SessionsPage() {
             : undefined
         }
       >
-        <Button render={<Link href="/sessions/new" />}>
+        <Button nativeButton={false} render={<Link href="/sessions/new" />}>
           <Plus className="size-4" /> Add past session
         </Button>
       </PageHeader>

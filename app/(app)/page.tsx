@@ -25,12 +25,13 @@ export default async function HomePage() {
   if (sessions.length === 0 && transactions.length === 0) redirect("/welcome");
 
   const balances = computeBalances(sessions, transactions);
+  const hasCompleted = sessions.some((s) => s.status === "completed");
 
   return (
     <div className="flex flex-col">
       <PageHeader title="Dashboard" description="How's the poker career going?">
-        {!active && (
-          <Button render={<Link href="/session/live" />}>
+        {!active && hasCompleted && (
+          <Button nativeButton={false} render={<Link href="/session/live" />}>
             <Play className="size-4" /> Start session
           </Button>
         )}
@@ -51,7 +52,11 @@ export default async function HomePage() {
         </Link>
       )}
 
-      <Dashboard sessions={sessions} balances={balances} />
+      <Dashboard
+        sessions={sessions}
+        balances={balances}
+        hasActiveSession={active != null}
+      />
     </div>
   );
 }

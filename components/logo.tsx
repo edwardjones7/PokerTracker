@@ -1,8 +1,14 @@
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /* Same artwork as app/icon.svg, inlined so it scales with the container
-   and needs no extra request. Keep the two in sync. */
+   and needs no extra request. Keep the two in sync. Gradient ids are per
+   instance: a shared id could resolve to a copy inside a display:none nav,
+   which paints nothing. */
 export function LogoMark({ className }: { className?: string }) {
+  const id = useId();
+  const tile = `${id}-tile`;
+  const gold = `${id}-gold`;
   return (
     <svg
       viewBox="0 0 64 64"
@@ -13,16 +19,16 @@ export function LogoMark({ className }: { className?: string }) {
       )}
     >
       <defs>
-        <linearGradient id="logo-tile" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={tile} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#241e15" />
           <stop offset="1" stopColor="#14110c" />
         </linearGradient>
-        <linearGradient id="logo-gold" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gold} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#f0cf74" />
           <stop offset="1" stopColor="#bd8b2e" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="14" fill="url(#logo-tile)" />
+      <rect width="64" height="64" rx="14" fill={`url(#${tile})`} />
       <rect
         x="1"
         y="1"
@@ -35,7 +41,7 @@ export function LogoMark({ className }: { className?: string }) {
         strokeWidth="2"
       />
       <path
-        fill="url(#logo-gold)"
+        fill={`url(#${gold})`}
         d="M32 11
            C 26 21.5, 14 26.5, 14 36.5
            C 14 44, 21 47.6, 26.5 44.6

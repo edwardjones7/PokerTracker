@@ -118,6 +118,7 @@ export default async function SessionDetailPage({
         <Button
           variant="outline"
           size="sm"
+          nativeButton={false}
           render={<Link href={`/sessions/${session.id}/edit`} />}
         >
           <Pencil className="size-4" /> Edit

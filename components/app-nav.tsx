@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, List, Spade, UsersRound, Wallet } from "lucide-react";
+import { AccountMenu } from "@/components/account-menu";
 import { Logo } from "@/components/logo";
+import { PoweredBy } from "@/components/powered-by";
 import { SignOutButton } from "@/components/sign-out-button";
 import { cn } from "@/lib/utils";
 
@@ -62,26 +64,32 @@ export function SideNav({ showUsers = false }: { showUsers?: boolean }) {
       </div>
       <div className="mt-auto flex flex-col gap-3 px-3 pb-5">
         <SignOutButton className="px-3 py-2 hover:bg-sidebar-accent/60" />
-        <p className="px-2 text-xs text-muted-foreground/60">
-          Track it or it didn&apos;t happen.
-        </p>
+        <div className="flex flex-col gap-1 px-2">
+          <p className="text-xs text-muted-foreground/60">
+            Track it or it didn&apos;t happen.
+          </p>
+          <PoweredBy className="self-start" />
+        </div>
       </div>
     </nav>
   );
 }
 
 /** Mobile navigation — bottom tab bar, hidden at lg and up. */
-export function BottomNav({ showUsers = false }: { showUsers?: boolean }) {
+export function BottomNav({
+  showUsers = false,
+  name,
+  email,
+}: {
+  showUsers?: boolean;
+  name: string;
+  email: string;
+}) {
   const pathname = usePathname();
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 lg:hidden">
-      <div
-        className={cn(
-          "mx-auto grid max-w-md pb-[env(safe-area-inset-bottom)]",
-          showUsers ? "grid-cols-5" : "grid-cols-4",
-        )}
-      >
-        {navItems(showUsers).map(({ href, label, icon: Icon }) => {
+      <div className="mx-auto grid max-w-md grid-cols-5 pb-[env(safe-area-inset-bottom)]">
+        {items.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link
@@ -94,16 +102,25 @@ export function BottomNav({ showUsers = false }: { showUsers?: boolean }) {
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <Icon
-                className="size-5"
-                {...(href === "/session/live" && active
-                  ? { fill: "currentColor", strokeWidth: 0 }
-                  : {})}
-              />
+              {href === "/session/live" ? (
+                // Raised action: -mt-7 leaves the same 20px footprint as the
+                // other icons, so every label stays on one baseline.
+                <span className="-mt-7 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_16px_oklch(0.8_0.13_85_/_0.35)] ring-4 ring-background">
+                  <Icon className="size-5.5" fill="currentColor" strokeWidth={0} />
+                </span>
+              ) : (
+                <Icon className="size-5" />
+              )}
               {label}
             </Link>
           );
         })}
+        <AccountMenu
+          name={name}
+          email={email}
+          showUsers={showUsers}
+          active={pathname.startsWith("/users")}
+        />
       </div>
     </nav>
   );
