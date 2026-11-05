@@ -43,7 +43,7 @@ export default function LoginPage() {
     <main className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <LogoMark className="mx-auto mb-3 size-12" />
+          <LogoMark detailed className="mx-auto mb-3 size-16" />
           <CardTitle className="text-2xl tracking-tight">
             PokerTracker
           </CardTitle>

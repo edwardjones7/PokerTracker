@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Play, Plus, Spade } from "lucide-react";
+import { Play, Plus, Spade } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   aggregateStats,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/stats";
 import { formatCents, formatCentsSigned } from "@/lib/money";
 import { AnimatedNumber } from "@/components/animated-number";
+import { ChipStack } from "@/components/chips";
 import { ProfitChart } from "@/components/profit-chart";
 import { Button } from "@/components/ui/button";
 import { SessionCard } from "@/components/session-card";
@@ -53,7 +54,7 @@ function Chip({
       className={cn(
         "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors",
         selected
-          ? "border-primary/50 bg-primary/10 font-medium text-foreground"
+          ? "border-brass bg-accent font-medium text-foreground"
           : "text-muted-foreground hover:bg-accent",
       )}
     >
@@ -88,29 +89,32 @@ function BankrollCard({ balances }: { balances: Balances }) {
   return (
     <Link
       href="/bankroll"
-      className="surface group flex flex-1 flex-col rounded-2xl border bg-gradient-to-b from-primary/10 to-card p-5 transition-colors hover:border-primary/30"
+      className="surface flex flex-1 items-center justify-between gap-3 rounded-2xl border bg-card p-5 transition-colors hover:border-brass-rim"
     >
-      <p className="flex items-center justify-between text-[11px] tracking-wide text-muted-foreground uppercase">
-        Bankroll
-        <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </p>
-      <p className="mt-0.5 text-3xl font-bold tracking-tight tabular-nums">
-        {formatCents(balances.total)}
-      </p>
-      <div className="mt-auto flex gap-6 pt-4 text-sm">
-        <div>
-          <p className="text-xs text-muted-foreground">Live</p>
-          <p className="font-semibold tabular-nums">
-            {formatCents(balances.live)}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">Online</p>
-          <p className="font-semibold tabular-nums">
-            {formatCents(balances.online)}
-          </p>
+      <div className="min-w-0">
+        <p className="text-xs tracking-[0.14em] text-muted-foreground uppercase">
+          Bankroll
+        </p>
+        <p className="mt-1 font-display numerals text-3xl font-semibold tabular-nums">
+          {formatCents(balances.total)}
+        </p>
+        <div className="mt-3 flex gap-6 text-sm">
+          <div>
+            <p className="text-xs text-muted-foreground">Live</p>
+            <p className="font-semibold tabular-nums">
+              {formatCents(balances.live)}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Online</p>
+            <p className="font-semibold tabular-nums">
+              {formatCents(balances.online)}
+            </p>
+          </div>
         </div>
       </div>
+      {/* The lg column is too narrow for big balances plus the stack. */}
+      <ChipStack className="w-20 lg:hidden xl:block" />
     </Link>
   );
 }
@@ -128,7 +132,7 @@ function FirstRun({
       <div className="surface flex flex-col items-center gap-4 rounded-2xl border bg-card p-8 text-center lg:col-span-2">
         <Spade className="size-8 text-primary" />
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">
+          <h2 className="font-display text-2xl font-medium">
             Log your first session
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -242,13 +246,13 @@ export function Dashboard({
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-3">
-            <div className="surface rounded-2xl border bg-card p-5 lg:col-span-2">
-              <p className="text-[11px] tracking-wide text-muted-foreground uppercase">
+            <div className="felt brass-rim rounded-3xl p-5 lg:col-span-2 lg:p-6">
+              <p className="text-xs tracking-[0.14em] text-foreground/80 uppercase">
                 Profit
               </p>
               <p
                 className={cn(
-                  "mt-0.5 text-3xl font-bold tracking-tight tabular-nums lg:text-4xl",
+                  "mt-1 font-display numerals text-5xl font-semibold tabular-nums lg:text-6xl",
                   stats.totalProfit >= 0 ? "text-profit" : "text-loss",
                 )}
               >
@@ -325,7 +329,9 @@ export function Dashboard({
           </div>
 
           <div className="mt-2 flex items-center justify-between">
-            <h2 className="text-sm font-medium">Recent sessions</h2>
+            <h2 className="font-display text-2xl font-medium">
+              Recent sessions
+            </h2>
             <Link
               href="/sessions"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"

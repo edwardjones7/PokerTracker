@@ -9,7 +9,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-heading: var(--font-sans);
+  --font-display: var(--font-bodoni), Georgia, serif;
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,6 +42,8 @@
   --color-card: var(--card);
   --color-profit: var(--profit);
   --color-loss: var(--loss);
+  --color-brass: var(--brass);
+  --color-brass-rim: var(--brass-rim);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -50,47 +53,52 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* The app is dark-only (html always carries .dark): casino noir — warm
-   near-black surfaces with a gold primary. :root mirrors .dark so nothing
-   depends on the class. */
+/* The app is dark-only (html always carries .dark): a high-roller room —
+   green-black surfaces, brass trim, felt for the moments that matter. :root
+   mirrors .dark so nothing depends on the class. */
 :root,
 .dark {
-  --background: oklch(0.165 0.008 75);
-  --foreground: oklch(0.955 0.005 90);
-  --card: oklch(0.205 0.01 80);
-  --card-foreground: oklch(0.955 0.005 90);
-  --popover: oklch(0.225 0.01 80);
-  --popover-foreground: oklch(0.955 0.005 90);
-  --primary: oklch(0.8 0.13 85);
-  --primary-foreground: oklch(0.24 0.05 85);
-  --secondary: oklch(0.26 0.012 80);
-  --secondary-foreground: oklch(0.955 0.005 90);
-  --muted: oklch(0.25 0.01 80);
-  --muted-foreground: oklch(0.69 0.015 85);
-  --accent: oklch(0.27 0.018 85);
-  --accent-foreground: oklch(0.955 0.005 90);
-  --destructive: oklch(0.68 0.19 25);
-  --border: oklch(0.95 0.025 85 / 11%);
-  --input: oklch(0.95 0.025 85 / 15%);
-  --ring: oklch(0.7 0.09 85);
-  /* Chart line #bd8b2e — validated against the card surface (L band, chroma,
-     3:1 contrast) with the dataviz palette checker. */
-  --chart-1: #bd8b2e;
+  --background: #0b100d;
+  --foreground: #f3eddd;
+  --card: #141a16;
+  --card-foreground: #f3eddd;
+  --popover: #18201b;
+  --popover-foreground: #f3eddd;
+  --primary: #e0bc68;
+  --primary-foreground: #1c1608;
+  --secondary: #1e2a1f;
+  --secondary-foreground: #f3eddd;
+  --muted: #1c241f;
+  --muted-foreground: #bdb5a0;
+  --accent: #1e2a1f;
+  --accent-foreground: #f3eddd;
+  --destructive: #ff8a78;
+  --border: #39402f;
+  --input: #39402f;
+  --ring: #c9a24b;
+  /* Brass line reads on both the card surface and the felt panel. */
+  --chart-1: #e9cb7e;
   --chart-2: #5b8fe6;
   --chart-3: #33a06f;
   --chart-4: #c25a83;
   --chart-5: #8a7fe0;
-  --profit: oklch(0.78 0.14 155);
-  --loss: oklch(0.72 0.16 22);
+  /* Brighter than the felt so wins never blend into the table. */
+  --profit: #7be8ae;
+  --loss: #ff9a8a;
+  --felt: #17543f;
+  --felt-deep: #0a241b;
+  --brass: #d4ae5a;
+  --brass-rim: #a98a44;
   --radius: 0.75rem;
-  --sidebar: oklch(0.185 0.009 78);
-  --sidebar-foreground: oklch(0.955 0.005 90);
-  --sidebar-primary: oklch(0.8 0.13 85);
-  --sidebar-primary-foreground: oklch(0.24 0.05 85);
-  --sidebar-accent: oklch(0.26 0.014 85);
-  --sidebar-accent-foreground: oklch(0.955 0.005 90);
-  --sidebar-border: oklch(0.95 0.025 85 / 9%);
-  --sidebar-ring: oklch(0.7 0.09 85);
+  --sidebar: #0e1411;
+  --sidebar-foreground: #f3eddd;
+  --sidebar-primary: #e0bc68;
+  --sidebar-primary-foreground: #1c1608;
+  --sidebar-accent: #1e2a1f;
+  --sidebar-accent-foreground: #f3eddd;
+  --sidebar-border: #a98a44;
+  --sidebar-ring: #c9a24b;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .75 0 0 0 0 1 0 0 0 0 .85 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Raised card: a hairline of light along the top edge. */
@@ -100,26 +108,59 @@
     0 1px 2px oklch(0 0 0 / 25%);
 }
 
+/* Display numbers: Bodoni's automatic large-size cut has hairlines too thin
+   for + - and $, so pin a sturdier optical size. */
+@utility numerals {
+  font-variation-settings: "opsz" 11;
+}
+
+/* Green baize with a pool of light from above. */
+@utility felt {
+  background-image:
+    var(--grain),
+    radial-gradient(120% 90% at 50% 0%, var(--felt), var(--felt-deep) 85%);
+}
+
+/* Full-screen table for the live session. */
+@utility felt-room {
+  background-image:
+    var(--grain),
+    radial-gradient(
+      90% 60% at 50% 38%,
+      #1b6049,
+      #0d3327 62%,
+      #071a14 100%
+    );
+}
+
+/* Double brass edge, like the rail around a table. */
+@utility brass-rim {
+  border: 1px solid var(--brass-rim);
+  box-shadow:
+    inset 0 0 0 4px var(--background),
+    inset 0 0 0 5px rgb(212 174 90 / 28%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
-    /* Gold glow over a faint felt grain. */
+    /* A dim green glow from overhead, over a faint grain. */
     background-image:
       radial-gradient(
         900px 480px at 50% -120px,
-        oklch(0.32 0.05 85 / 0.32),
+        rgb(23 84 63 / 0.34),
         transparent 70%
       ),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .85 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+      var(--grain);
     background-repeat: no-repeat, repeat;
   }
   html {
     @apply font-sans;
   }
   ::selection {
-    background: oklch(0.8 0.13 85 / 0.3);
+    background: rgb(212 174 90 / 0.3);
   }
 }

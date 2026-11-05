@@ -9,9 +9,9 @@ const VENUE_ICONS: Record<Venue, LucideIcon> = {
 };
 
 const VENUE_TINTS: Record<Venue, string> = {
-  casino: "bg-amber-400/10 text-amber-300",
-  home: "bg-sky-400/10 text-sky-300",
-  online: "bg-violet-400/10 text-violet-300",
+  casino: "bg-primary/10 text-primary",
+  home: "bg-profit/10 text-profit",
+  online: "bg-foreground/10 text-foreground",
 };
 
 export function VenueIcon({

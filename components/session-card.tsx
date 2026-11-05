@@ -7,7 +7,7 @@ import {
   type SessionWithRebuys,
 } from "@/lib/stats";
 import { venueLabel } from "@/lib/venues";
-import { VenueBadge } from "@/components/venue-icon";
+import { StakesChip } from "@/components/chips";
 import { LocalTime } from "@/components/local-time";
 import { cn } from "@/lib/utils";
 
@@ -18,17 +18,16 @@ export function SessionCard({ session }: { session: SessionWithRebuys }) {
   return (
     <Link
       href={`/sessions/${session.id}`}
-      className="flex items-center gap-3.5 rounded-xl border bg-card p-4 transition-colors hover:border-primary/25 hover:bg-accent/60"
+      className="surface flex items-center gap-3 rounded-2xl border bg-card p-3.5 transition-colors hover:border-brass-rim hover:bg-accent/60"
     >
-      <VenueBadge venue={session.venue} />
+      <StakesChip stakes={formatStakes(session.stakesSmall, session.stakesBig)} />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">
           {session.location || meta.label}
         </p>
         <p className="text-sm text-muted-foreground">
           <LocalTime date={session.startedAt} format="date" /> ·{" "}
-          {formatStakes(session.stakesSmall, session.stakesBig)} ·{" "}
-          {formatHours(hours)}
+          {formatHours(hours)} · {meta.label}
         </p>
       </div>
       <span

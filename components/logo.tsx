@@ -1,58 +1,61 @@
 import { useId } from "react";
+import { SPADE_PATH } from "@/components/chips";
 import { cn } from "@/lib/utils";
 
-/* Same artwork as app/icon.svg, inlined so it scales with the container
-   and needs no extra request. Keep the two in sync. Gradient ids are per
-   instance: a shared id could resolve to a copy inside a display:none nav,
-   which paints nothing. */
-export function LogoMark({ className }: { className?: string }) {
+/* The chip logo. Small sizes use flat colors so the edge notches stay crisp;
+   `detailed` adds the brass gradients for large placements. Gradient ids are
+   per instance: a shared id could resolve to a copy inside a display:none nav,
+   which paints nothing. Keep app/icon.svg visually in sync. */
+export function LogoMark({
+  className,
+  detailed = false,
+}: {
+  className?: string;
+  detailed?: boolean;
+}) {
   const id = useId();
-  const tile = `${id}-tile`;
-  const gold = `${id}-gold`;
+  const brassId = `${id}-brass`;
+  const brass = detailed ? `url(#${brassId})` : "#D9B45F";
   return (
     <svg
       viewBox="0 0 64 64"
       aria-hidden="true"
-      className={cn(
-        "drop-shadow-[0_0_10px_oklch(0.8_0.13_85_/_0.35)]",
-        className ?? "size-9",
-      )}
+      className={cn("shrink-0", className ?? "size-9")}
     >
-      <defs>
-        <linearGradient id={tile} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#241e15" />
-          <stop offset="1" stopColor="#14110c" />
-        </linearGradient>
-        <linearGradient id={gold} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f0cf74" />
-          <stop offset="1" stopColor="#bd8b2e" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="14" fill={`url(#${tile})`} />
-      <rect
-        x="1"
-        y="1"
-        width="62"
-        height="62"
-        rx="13"
+      {detailed && (
+        <defs>
+          <linearGradient id={brassId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#F2D88F" />
+            <stop offset="0.55" stopColor="#D4AE5A" />
+            <stop offset="1" stopColor="#9E7A32" />
+          </linearGradient>
+        </defs>
+      )}
+      <circle cx="32" cy="32" r="31" fill="#14110C" />
+      <circle
+        cx="32"
+        cy="32"
+        r="27"
         fill="none"
-        stroke="#e8c05f"
-        strokeOpacity="0.35"
-        strokeWidth="2"
+        stroke={brass}
+        strokeWidth="8"
+        strokeDasharray="10.6 10.6"
+      />
+      {detailed && (
+        <circle cx="32" cy="32" r="31" fill="none" stroke={brass} />
+      )}
+      <circle
+        cx="32"
+        cy="32"
+        r={detailed ? 20 : 21}
+        fill="#0F3A2C"
+        stroke={detailed ? brass : "none"}
+        strokeWidth="0.9"
       />
       <path
-        fill={`url(#${gold})`}
-        d="M32 11
-           C 26 21.5, 14 26.5, 14 36.5
-           C 14 44, 21 47.6, 26.5 44.6
-           C 28.5 43.5, 30 41.8, 30.8 39.9
-           C 29.9 46, 27.6 49.9, 24 52.6
-           L 40 52.6
-           C 36.4 49.9, 34.1 46, 33.2 39.9
-           C 34 41.8, 35.5 43.5, 37.5 44.6
-           C 43 47.6, 50 44, 50 36.5
-           C 50 26.5, 38 21.5, 32 11
-           Z"
+        fill={detailed ? brass : "#E9CB7E"}
+        transform={`translate(32 32) scale(${detailed ? 0.62 : 0.68}) translate(-32 -32)`}
+        d={SPADE_PATH}
       />
     </svg>
   );
@@ -62,9 +65,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <LogoMark />
-      <span className="text-base font-semibold tracking-tight">
-        PokerTracker
-      </span>
+      <span className="font-display text-xl font-medium">PokerTracker</span>
     </span>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, List, Spade, UsersRound, Wallet } from "lucide-react";
 import { AccountMenu } from "@/components/account-menu";
+import { PlayChip } from "@/components/chips";
 import { Logo } from "@/components/logo";
 import { PoweredBy } from "@/components/powered-by";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -87,7 +88,7 @@ export function BottomNav({
 }) {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-sidebar-border bg-sidebar/95 backdrop-blur lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-5 pb-[env(safe-area-inset-bottom)]">
         {items.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
@@ -103,11 +104,9 @@ export function BottomNav({
               )}
             >
               {href === "/session/live" ? (
-                // Raised action: -mt-7 leaves the same 20px footprint as the
+                // Raised action: -mt-9 leaves the same 20px footprint as the
                 // other icons, so every label stays on one baseline.
-                <span className="-mt-7 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_16px_oklch(0.8_0.13_85_/_0.35)] ring-4 ring-background">
-                  <Icon className="size-5.5" fill="currentColor" strokeWidth={0} />
-                </span>
+                <PlayChip className="-mt-9 size-14 drop-shadow-[0_4px_12px_rgb(212_174_90_/_0.3)]" />
               ) : (
                 <Icon className="size-5" />
               )}

@@ -7,17 +7,19 @@ const DURATION_MS = 450;
 /**
  * Renders the formatted value and counts to the new one when it changes
  * (e.g. switching dashboard filters). The first render is the real number,
- * so SSR output matches and nothing flashes from zero on load.
+ * so nothing flashes from zero on load, unless `from` asks for a count-up.
  */
 export function AnimatedNumber({
   value,
+  from,
   format,
 }: {
   value: number;
+  from?: number;
   format: (value: number) => string;
 }) {
-  const [shown, setShown] = useState(value);
-  const current = useRef(value);
+  const [shown, setShown] = useState(from ?? value);
+  const current = useRef(from ?? value);
 
   useEffect(() => {
     if (current.current === value) return;

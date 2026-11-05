@@ -8,7 +8,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Multi-user, mobile-first poker session tracker (cash games only). Next.js 16
 App Router + TypeScript + Tailwind v4 + shadcn/ui (Base UI primitives — use
-`render={<Link/>}`, not `asChild`). Deployed on Vercel.
+`render={<Link/>}` plus `nativeButton={false}`, not `asChild`). Deployed on Vercel.
 
 ## Commands
 

@@ -2,6 +2,7 @@ import { Banknote, Monitor } from "lucide-react";
 import { getBankrollBalances, getTransactions } from "@/lib/data";
 import { formatCents, formatCentsSigned } from "@/lib/money";
 import { BankrollForm } from "@/components/bankroll-form";
+import { ChipStack } from "@/components/chips";
 import { LocalTime } from "@/components/local-time";
 import { PageHeader } from "@/components/page-header";
 import { cn } from "@/lib/utils";
@@ -27,15 +28,20 @@ export default async function BankrollPage() {
       />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <div className="rounded-2xl border bg-gradient-to-b from-primary/10 to-card p-5 sm:p-6 lg:col-start-1 lg:row-start-1">
-          <p className="text-[11px] tracking-wide text-muted-foreground uppercase">
-            Total bankroll
-          </p>
-          <p className="mt-1 text-4xl font-bold tracking-tight tabular-nums">
-            {formatCents(balances.total)}
-          </p>
+        <div className="felt brass-rim rounded-3xl p-5 sm:p-6 lg:col-start-1 lg:row-start-1">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs tracking-[0.14em] text-foreground/80 uppercase">
+                Total bankroll
+              </p>
+              <p className="mt-1 font-display numerals text-5xl font-semibold tabular-nums">
+                {formatCents(balances.total)}
+              </p>
+            </div>
+            <ChipStack className="hidden w-20 sm:block" />
+          </div>
           <div className="mt-5 grid grid-cols-2 gap-2 sm:max-w-md">
-            <div className="rounded-xl border bg-card/60 p-3.5">
+            <div className="rounded-xl border bg-background/60 p-3.5">
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Banknote className="size-3.5" /> Live
               </p>
@@ -43,7 +49,7 @@ export default async function BankrollPage() {
                 {formatCents(balances.live)}
               </p>
             </div>
-            <div className="rounded-xl border bg-card/60 p-3.5">
+            <div className="rounded-xl border bg-background/60 p-3.5">
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Monitor className="size-3.5" /> Online
               </p>
@@ -52,7 +58,7 @@ export default async function BankrollPage() {
               </p>
             </div>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-xs text-foreground/80">
             Your live roll is {liveBuyIns.toFixed(1)} buy-ins at $1/$2 (100bb).
             20+ is considered comfortable.
           </p>
